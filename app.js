@@ -18,12 +18,26 @@ function insertDocuments(db, callback) {
   });
 }
 
+function findDocuments(db, callback) {
+  // Grab the documents collection.
+  const collection = db.collection('documents');
+
+  collection.find({}).toArray(function(err, docs) {
+    assert.equal(null, err);
+    console.log("Found the following records:");
+    console.log(docs);
+    callback(docs);
+  })
+}
+
 
 MongoClient.connect(url, function(err, db) {
   assert.equal(null, err);
   console.log("Connected successfully to server!");
 
   insertDocuments(db, function() {
-    db.close();
+    findDocuments(db, function() {
+      db.close();
+    });
   });
 });
