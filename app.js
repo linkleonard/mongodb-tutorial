@@ -22,7 +22,10 @@ function findDocuments(db, callback) {
   // Grab the documents collection.
   const collection = db.collection('documents');
 
-  collection.find({}).toArray(function(err, docs) {
+  // Only retrieve documents that match our query.
+  // Queries are plain JS objects.
+  const query = {a: 3};
+  collection.find(query).toArray(function(err, docs) {
     assert.equal(null, err);
     console.log("Found the following records:");
     console.log(docs);
