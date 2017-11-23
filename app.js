@@ -63,16 +63,33 @@ function removeDocument(db, callback) {
 }
 
 
+function indexCollection(db, callback) {
+  const collection = db.collection('documents');
+
+  // It appears that we only need to specify the keys, the value we actually
+  // store in the object is not important.
+  const fields = {a: 1};
+  const options = null;
+  collection.createIndex(fields, options, function(err, results) {
+    assert.equal(null, err);
+    console.log(`Added an index to field 'a' as "${results}"!`);
+    callback(results);
+  });
+}
+
+
 
 MongoClient.connect(url, function(err, db) {
   assert.equal(null, err);
   console.log("Connected successfully to server!");
 
-  insertDocuments(db, function() {
-    updateDocument(db, function() {
-      findDocuments(db, function() {
-        removeDocument(db, function() {
-          db.close();
+  indexCollection(db, function() {
+    insertDocuments(db, function() {
+      updateDocument(db, function() {
+        findDocuments(db, function() {
+          removeDocument(db, function() {
+            db.close();
+          });
         });
       });
     });
