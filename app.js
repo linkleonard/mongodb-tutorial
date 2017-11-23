@@ -49,6 +49,21 @@ function updateDocument(db, callback) {
 }
 
 
+function removeDocument(db, callback) {
+  const collection = db.collection('documents');
+
+  // Delete the first document where a is 3
+  const filter = {a: 3};
+  collection.deleteOne(filter, function(err, result) {
+    assert.equal(null, err);
+    assert.equal(1, result.result.n);
+    console.log('Removed a document matching a = 3!');
+    callback(result);
+  });
+}
+
+
+
 MongoClient.connect(url, function(err, db) {
   assert.equal(null, err);
   console.log("Connected successfully to server!");
@@ -56,7 +71,9 @@ MongoClient.connect(url, function(err, db) {
   insertDocuments(db, function() {
     updateDocument(db, function() {
       findDocuments(db, function() {
-        db.close();
+        removeDocument(db, function() {
+          db.close();
+        });
       });
     });
   });
