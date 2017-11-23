@@ -24,7 +24,7 @@ function findDocuments(db, callback) {
 
   // Only retrieve documents that match our query.
   // Queries are plain JS objects.
-  const query = {a: 3};
+  const query = {a: 2};
   collection.find(query).toArray(function(err, docs) {
     assert.equal(null, err);
     console.log("Found the following records:");
@@ -34,13 +34,30 @@ function findDocuments(db, callback) {
 }
 
 
+function updateDocument(db, callback) {
+  const collection = db.collection('documents');
+
+  // Update the first document matching the filter a === 2, setting b = 1.
+  const filter = {a: 2};
+  const update = {$set: {b: 1}};
+  collection.updateOne(filter, update, function(err, result) {
+    assert.equal(null, err);
+    assert.equal(1, result.result.n);
+    console.log("Successfully updated a document by setting b = 1.");
+    callback(result);
+  });
+}
+
+
 MongoClient.connect(url, function(err, db) {
   assert.equal(null, err);
   console.log("Connected successfully to server!");
 
   insertDocuments(db, function() {
-    findDocuments(db, function() {
-      db.close();
+    updateDocument(db, function() {
+      findDocuments(db, function() {
+        db.close();
+      });
     });
   });
 });
